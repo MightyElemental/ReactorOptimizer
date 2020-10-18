@@ -4,6 +4,9 @@ A script designed to find the optimal reactor control rod position for best reac
 
 Writtin in Lua and designed to be used with ComputerCraft and BigReactors/ExtremeReactors.
 * * *
+The idea originated from the online BigReactor Simulator website found here: [https://br.sidoh.org/](https://br.sidoh.org/)
+This site also has a built-in peak efficiency calculator, and can also calculate space efficiency. The main difference between this script and the online simulator is that it manages the reactor for you so you don't need to manually change the reactor settings. This script can be run on any reactor without needing to recreate it online.
+* * *
 ## Example
 
 The following graph was generated from a [reactor of this design](https://br.sidoh.org/#reactor-design?length=3&width=3&height=3&activelyCooled=false&controlRodInsertion=0&layout=XCXCXCXCX):
