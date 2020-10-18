@@ -1,3 +1,6 @@
+-- Used to block script from progressing until the reactor is at a stable temperature
+-- This is important because the temperature change is not instantaneous once the rod is changed
+-- Fuel consumption and energy output are dependent on the temperature so this is important for accuracy
 local function waitUntilTemperatureStable(reactor)
   lastFuel = reactor.getFuelTemperature()
   lastCase = reactor.getCasingTemperature()
@@ -26,34 +29,53 @@ function runOptimization(reactor)
     waitUntilTemperatureStable(reactor)
     
     eff = getEfficiency(reactor)
+    -- Efficiency may be higher after 80% rod insertion, but there is usually no point running a reactor at such a low power level
+    -- TODO: Create config for this (currently doesn't impact performance - it's just a visual thing)
     if(eff < bestEff and i > 80) then
       found = true
     end
     if(eff > bestEff and not found) then
       bestEff = eff
-      bestEffRodLevel = i
+      bestEffRodLevel = rodLevel
     end
     saveResult(reactor,i,file)
-    print("reactor rod position: "..tostring(rodLevel))
-    print("efficiency : "..tostring(eff).."      ")
-    print("best efficiency: "..tostring(bestEff).." @ "..tostring(bestEffRodLevel).."      ")
+    print(string.format("Reactor Rod Position: %i  ", rodLevel))
+    print(string.format("Efficiency: %i      ", eff))
+    print(string.format("Best Efficiency: %i @ %i       ", bestEff, bestEffRodLevel))
   end
   reactor.setAllControlRodLevels(bestEffRodLevel)
   file.flush()
 end
 
-function saveResult(reactor,i,file)
-  ener = reactor.getEnergyProducedLastTick()
-  fuel = reactor.getFuelConsumedLastTick()
-  file.writeLine(tostring(i)..","..tostring(ener)..","..tostring(fuel)..","..tostring(getEfficiency(reactor)))
+-- Write rod insertion value to file
+function saveResult(reactor,rodInsertLvl,file)
+  energy, fuel, efficiency = getReactorStats(reactor)
+  file.writeLine(string.format("%i,%f,%f,%f", rodInsertLvl, energy, fuel, efficiency))
 end
 
-function getEfficiency(reactor)
+-- Returns the energy, fuel usage, and efficiency of the reactor at this moment
+function getReactorStats(reactor)
   fuel = reactor.getFuelConsumedLastTick()
   energy = reactor.getEnergyProducedLastTick()
-  return energy/fuel
+  -- You don't want 0 fuel usage or 0 energy output!
+  -- This will lead to div/0 error or an outlier efficiency value of 0
+  while (fuel <= 0 or energy <= 0) do
+    fuel = reactor.getFuelConsumedLastTick()
+    energy = reactor.getEnergyProducedLastTick()
+    sleep(0.5)
+  end
+  efficiency = energy/fuel
+
+  return energy, fuel, efficiency
 end
 
+-- Get efficiency ratio at current moment
+function getEfficiency(reactor)
+  _,_,efficiency = getReactorStats(reactor)
+  return efficiency
+end
+
+-- Used to get the rod insertion level for best efficiency from result file
 function getBestEfficiencyFromFile()
   if not fs.exists("reactorOptimization.csv") then
     return -1
@@ -78,6 +100,7 @@ function getBestEfficiencyFromFile()
   return bestEffRodLevel,bestEff
 end
 
+-- Used to split csv line into array
 function getValues(line)
   return line:match("([^,]+),([^,]+),([^,]+),([^,]+)")
 end
