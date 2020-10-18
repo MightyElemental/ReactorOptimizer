@@ -2,11 +2,14 @@ os.loadAPI("graph.lua")
 os.loadAPI("optimize.lua")
 local reactor = peripheral.find("BigReactors-Reactor")
 
-if not fs.exists("reactorOptimization.csv") then
+if not fs.exists(optimize.OUTPUT_FILE) then
   optimize.runOptimization(reactor)
 end
 
 energyLastSec = 0
+
+-- Get best efficiency under 80% rod insertion
+targetPos,_ = optimize.getBestEfficiency(optimize.MAX_INSERTION)
 
 g = graph.newGraph(4,2000000,10000000)
 graph.addLabel(g,"Energy")
@@ -28,8 +31,7 @@ end
 
 function pushRodIn()
   current = reactor.getControlRodLevel(1)
-  rodPos,_=optimize.getBestEfficiencyFromFile()
-  if current < rodPos-5 then
+  if current < targetPos-5 then
     reactor.setAllControlRodLevels(current+5)
   end
 end
@@ -54,7 +56,9 @@ while true do
   
   rodPos = reactor.getControlRodLevel(1)
   
-  print("Rod Position: "..tostring(rodPos).."    ")
+  print("\n--- RODS ---")
+  print(string.format("Target Position: %i    ", targetPos))
+  print(string.format("Current Position: %i    ", rodPos))
   
   graph.addData(g,energy)
   graph.addLabel(g,"Energy: "..tostring(energy))

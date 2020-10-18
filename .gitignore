@@ -2,4 +2,4 @@
 graphTest.lua
 
 # Ignore calculated files
-reactorOptimization.csv
+reactor_optimization.csv

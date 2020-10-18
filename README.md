@@ -1,8 +1,16 @@
 # Reactor Optimization
 
-A script designed to find the optimal reactor control rod position for best reactor efficiency.
+A script designed to find the optimal reactor control rod position for best reactor efficiency. Once the optimal has been found, this script will attempt to manage the reactor to stay at the optimal. Will automatically extract the rods if energy demand is higher than current power generation, then will try to find an equilibrium. Once the power demand reduces, the script will return to optimal rod insertion.
 
 Writtin in Lua and designed to be used with ComputerCraft and BigReactors/ExtremeReactors.
+* * *
+## Example
+
+The following graph was generated from a [reactor of this design](https://br.sidoh.org/#reactor-design?length=3&width=3&height=3&activelyCooled=false&controlRodInsertion=0&layout=XCXCXCXCX):
+[![https://imgur.com/KPch0ir.png](https://imgur.com/KPch0ir.png)](https://imgur.com/KPch0ir.png)
+
+[![https://imgur.com/3AvGtSK](https://imgur.com/3AvGtSK)](https://imgur.com/3AvGtSK)
+
 * * *
 
 ## How to use
