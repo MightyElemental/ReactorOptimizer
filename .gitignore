@@ -1,2 +1,5 @@
 # Ignore useless test file
 graphTest.lua
+
+# Ignore calculated files
+reactorOptimization.csv

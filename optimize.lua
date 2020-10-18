@@ -11,7 +11,7 @@ local function waitUntilTemperatureStable(reactor)
 end
 
 function runOptimization(reactor)
-  local file = fs.open("reactorOptimization", "w")
+  local file = fs.open("reactorOptimization.csv", "w")
   file.writeLine("Rod Pos, Power, Fuel Used, Efficiency")
   reactor.setActive(true)
   term.clear()
@@ -55,10 +55,10 @@ function getEfficiency(reactor)
 end
 
 function getBestEfficiencyFromFile()
-  if not fs.exists("reactorOptimization") then
+  if not fs.exists("reactorOptimization.csv") then
     return -1
   end
-  file = fs.open("reactorOptimization", "r")
+  file = fs.open("reactorOptimization.csv", "r")
   hasNext = true
   file.readLine()
   bestEff = 0

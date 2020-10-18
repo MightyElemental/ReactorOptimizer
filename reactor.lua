@@ -2,7 +2,7 @@ os.loadAPI("graph.lua")
 os.loadAPI("optimize.lua")
 local reactor = peripheral.find("BigReactors-Reactor")
 
-if not fs.exists("reactorOptimization") then
+if not fs.exists("reactorOptimization.csv") then
   optimize.runOptimization(reactor)
 end
 
