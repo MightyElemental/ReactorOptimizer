@@ -19,9 +19,17 @@ The following graph was generated from a [reactor of this design](https://br.sid
 * * *
 
 ## How to use
-1. [Build a reactor](https://ftbwiki.org/Big_Reactors) with a com port
+1. [Build a reactor](https://ftbwiki.org/Big_Reactors) with a [com port](https://ftbwiki.org/Reactor_Computer_Port)
 2. [Craft a computer](https://www.computercraft.info/) (Regular or advanced)
 3. Place the computer next to the com port on the reactor
 4. Copy the script files into the computer
 5. Restart the computer (Hold Ctrl+R)
 6. Let computer run through the initilization
+
+* * *
+## Good to know
+
+- [The BigReactors mod](https://www.curseforge.com/minecraft/mc-mods/big-reactors) was discontinued after MC version 1.7.10 and was replaced with [the ExtremeReactors mod](https://www.curseforge.com/minecraft/mc-mods/extreme-reactors), which again appears to be discontinued after MC version 1.12.2. 
+Then again, who would want to play anything past that version? The MC dev team has added too much stuff. MC 1.7.10 and MC 1.12.2 is where it's at for modding.
+- [The ComputerCraft mod](https://www.curseforge.com/minecraft/mc-mods/computercraft) was discontinued after MC version 1.8.9 but was thankfully [uploaded to GitHub](https://github.com/dan200/ComputerCraft) to allow anyone to continue the code. Computer Craft lives on after MC 1.8.9 in the form of [CC: Tweaked](https://www.curseforge.com/minecraft/mc-mods/cc-tweaked).
+- You can actually [download github repos](http://www.computercraft.info/forums2/index.php?/topic/4072-github-repository-downloader/) in ComputerCraft
