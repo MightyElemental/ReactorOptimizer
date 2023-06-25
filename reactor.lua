@@ -1,6 +1,9 @@
 os.loadAPI("graph.lua")
 os.loadAPI("optimize.lua")
-local reactor = peripheral.find("BigReactors-Reactor")
+local reactor = peripheral.find("BiggerReactors_Reactor")
+
+local mainRod = reactor.getControlRod(0)
+local battery = reactor.battery()
 
 if not fs.exists(optimize.OUTPUT_FILE) then
   optimize.runOptimization(reactor)
@@ -21,7 +24,7 @@ graph.changeType(useGraph,1)
 term.clear()
 
 function pullRodOut()
-  current = reactor.getControlRodLevel(1)
+  current = mainRod.level()
   if current > 5 then
     reactor.setAllControlRodLevels(current-5)
   else
@@ -30,36 +33,39 @@ function pullRodOut()
 end
 
 function pushRodIn()
-  current = reactor.getControlRodLevel(1)
+  current = mainRod.level()
   if current < targetPos-5 then
     reactor.setAllControlRodLevels(current+5)
   end
 end
 
 while true do
-  local energy = reactor.getEnergyStored()
-  if energy > 8000000 then
+  local energy = battery.stored()
+  local capacity = battery.capacity()
+  if energy > capacity*0.8 then
     reactor.setActive(false)
-  elseif energy < 4000000 then
+  elseif energy < capacity*0.4 then
     reactor.setActive(true)
   end
   term.setCursorPos(1,1)
   usage = energyLastSec-energy
-  print("Energy: " .. tostring(reactor.getEnergyStored()).."       ")
-  print("Usage: "..tostring(usage).."     ")
   
-  if reactor.getActive() and (usage > 0 or energy == 0) then
+  if reactor.active() and (usage > 0 or energy == 0) then
     pullRodOut()
   else
     pushRodIn()
   end
   
-  rodPos = reactor.getControlRodLevel(1)
+  rodPos = mainRod.level()
+  chargePct = (energy/capacity)*100
+
+  print("Energy: " .. tostring(battery.stored()).." ("..tostring(math.floor(chargePct*10)/10).."%)  ")
+  print("Usage: "..tostring(usage).."     ")
   
   print("\n--- RODS ---")
   print(string.format("Target Position: %i    ", targetPos))
   print(string.format("Current Position: %i    ", rodPos))
-  
+
   graph.addData(g,energy)
   graph.addLabel(g,"Energy: "..tostring(energy))
   graph.renderGraph(g)
