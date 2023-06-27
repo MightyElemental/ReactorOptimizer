@@ -14,10 +14,11 @@ energyLastSec = 0
 -- Get best efficiency under 80% rod insertion
 targetPos,_ = optimize.getBestEfficiency(optimize.MAX_INSERTION)
 
-g = graph.newGraph(4,2000000,10000000)
+g = graph.newGraph(4, 0, battery.capacity())
 graph.addLabel(g,"Energy")
 
-useGraph = graph.newGraph(3,1100,12000)
+-- TODO: Make graph adaptive
+useGraph = graph.newGraph(3,0,10000)
 graph.addLabel(useGraph,"Usage")
 graph.changeType(useGraph,1)
 
@@ -25,17 +26,22 @@ term.clear()
 
 function pullRodOut()
   current = mainRod.level()
-  if current > 5 then
-    reactor.setAllControlRodLevels(current-5)
-  else
-    reactor.setAllControlRodLevels(0)
-  end
+  reactor.setAllControlRodLevels(current-1)
 end
 
 function pushRodIn()
   current = mainRod.level()
-  if current < targetPos-5 then
-    reactor.setAllControlRodLevels(current+5)
+  if current < targetPos then
+    reactor.setAllControlRodLevels(current+1)
+  end
+end
+
+function controlRods(usage, energy)
+  if reactor.active() and (usage > 0 or energy == 0) then
+    -- TODO: Lookup value from csv file to match demand
+    pullRodOut()
+  else
+    pushRodIn()
   end
 end
 
@@ -50,17 +56,16 @@ while true do
   term.setCursorPos(1,1)
   usage = energyLastSec-energy
   
-  if reactor.active() and (usage > 0 or energy == 0) then
-    pullRodOut()
-  else
-    pushRodIn()
-  end
+  controlRods(usage, energy)
   
   rodPos = mainRod.level()
   chargePct = (energy/capacity)*100
 
+  -- TODO: Change energy display to use RF/t instead of RF/s
+
   print("Energy: " .. tostring(battery.stored()).." ("..tostring(math.floor(chargePct*10)/10).."%)  ")
-  print("Usage: "..tostring(usage).."     ")
+  print("Usage: "..tostring(usage).."          ")
+  if reactor.active() then print("ACTIVE") else print("       ") end
   
   print("\n--- RODS ---")
   print(string.format("Target Position: %i    ", targetPos))
