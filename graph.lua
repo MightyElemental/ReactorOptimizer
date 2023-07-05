@@ -10,6 +10,21 @@ function newGraph(corner, lowerBound, upperBound)
   return #graphs
 end
 
+function changeLowBound(id, lowBound)
+  if( #graphs < id) then error("no such graph with ID "..tostring(id)) end
+  graphs[id][2] = lowBound
+end
+
+function changeHighBound(id, highBound)
+  if( #graphs < id) then error("no such graph with ID "..tostring(id)) end
+  graphs[id][3] = highBound
+end
+
+function getBounds(id)
+  if( #graphs < id) then error("no such graph with ID "..tostring(id)) end
+  return graphs[id][2], graphs[id][3]
+end
+
 function addLabel(id, label)
   if( #graphs < id) then error("no such graph with ID "..tostring(id)) end
   if( string.len(label) > 24) then error("Label must be shorter than 25 characters") end
